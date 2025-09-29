@@ -2,12 +2,13 @@
 #include "Card.hpp"
 #include <string>
 #include "Player.hpp"
+#include "Range.hpp"
 using namespace std;
 
 
 Player::Player(std::string name_in, int chips_in, int position_in)
     : name(name_in), chips(chips_in), position(position_in), current_bet(0),
-      folded(false), all_in(false), acted_this_round(false), is_dealer(false) {
+      folded(false), all_in(false), acted_this_round(false), is_dealer(false), range(Range()) {
     hand.fill(Card()); // Initialize hand with default cards
 }
 

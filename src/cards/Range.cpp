@@ -57,43 +57,59 @@ Range::Range(){
 
 
     double Range::get_prob(const array<Card, HAND_SIZE> hand){
-        return (range[hand[0].get_rank()][hand[1].get_rank()].prob);
+        return (range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].prob);
     }
 
     void Range::set_prob(array<Card, HAND_SIZE> hand, double prob){
-        
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].prob = prob;
+
+        //maybe add something to increment everything by diff/16 lmfao
+        //will see if needed
+        //also do same thing with other things ig
     }
 
 
     double Range::get_suited_prob(const array<Card, HAND_SIZE> hand){
-        return (range[hand[0].get_rank()][hand[1].get_rank()].suitedprob);
+        return (range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].suitedprob);
     }
 
 
     void Range::set_suited_prob(array<Card, HAND_SIZE> hand, double prob){
-
+        double temp = get_suited_prob(hand);
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].suitedprob = prob;
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].prob += prob - temp;
     }
 
 
     double Range::get_offsuit_prob(const array<Card, HAND_SIZE> hand){
-        return (range[hand[0].get_rank()][hand[1].get_rank()].offsuitprob);
+        return (range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].offsuitprob);
     }
 
 
     void Range::set_offsuit_prob(array<Card, HAND_SIZE> hand, double prob){
-
+        double temp = get_offsuit_prob(hand);
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].offsuitprob = prob;
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].prob += prob - temp;
     }
 
     double Range::get_specific_prob(const array<Card, HAND_SIZE> hand){
-        return (range[hand[0].get_rank()][hand[1].get_rank()].suit_combo_probs[hand[0].get_suit() * 4 + hand[1].get_rank()]);
+        return (range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].suit_combo_probs[hand[0].get_suit() * 4 + hand[1].get_suit()]);
     }
 
 
-    void Range::set_specific_prob(array<Card, HAND_SIZE> hand, double prob){
+    void Range::set_specific_prob(array<Card, HAND_SIZE> hand, double prob){\
+        bool is_suited = hand[0].get_suit() * 4 + hand[1].get_suit() % 5 == 0;
         double temp = get_specific_prob(hand);
-        range[hand[0].get_rank()][hand[1].get_rank()].suit_combo_probs[hand[0].get_suit() * 4 + hand[1].get_rank()] = prob;
-
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].suit_combo_probs[hand[0].get_suit() * 4 + hand[1].get_suit()] = prob;
+        range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].prob += prob - temp;
+        if(is_suited){
+            range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].suitedprob += prob - temp;
+        } 
+        else {
+            range[hand[0].get_rank() - 1][hand[1].get_rank() - 1].offsuitprob += prob - temp;
+        }
     }
+
 
     void Range::update_probs(){
         for(int i = 0; i < NUM_RANKS; i++){
